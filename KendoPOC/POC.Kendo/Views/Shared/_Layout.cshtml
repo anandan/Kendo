@@ -1,0 +1,95 @@
+﻿@using Poc.Kendo.Infrastructure;
+<!DOCTYPE html>
+<html>
+<head>
+    <title>@ViewBag.Title</title>
+    <link href="@Url.Content("~/Content/Site.css")" rel="stylesheet" type="text/css" />
+    <link href="@Url.Content("~/Content/kendo/2012.3.1315/kendo.common.min.css")" rel="stylesheet" type="text/css" />
+    <link href="@Url.Content("~/Content/kendo/2012.3.1315/kendo.dataviz.min.css")" rel="stylesheet" type="text/css" />
+    <link href="@Url.Content("~/Content/kendo/2012.3.1315/kendo.blueopal.min.css")" rel="stylesheet" type="text/css" />
+    <script src="@Url.Content("~/Scripts/kendo/2012.3.1315/jquery.min.js")"></script>
+    <script src="@Url.Content("~/Scripts/kendo/2012.3.1315/kendo.all.min.js")"></script>
+    <script src="@Url.Content("~/Scripts/kendo/2012.3.1315/kendo.aspnetmvc.min.js")"></script>
+
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+            handleAjaxMessages();
+            displayMessages();
+        });
+
+        function displayMessage(message, messageType) {
+            $("#messagewrapper").html('<div class="messagebox ' + messageType.toLowerCase() + '"></div>');
+            $("#messagewrapper .messagebox").text(message);
+            displayMessages();
+        }
+
+        function displayMessages() {
+            if ($("#messagewrapper").children().length > 0) {
+                $("#messagewrapper").show();
+                $(document).click(function () {
+                    clearMessages();
+                });
+            }
+            else {
+                $("#messagewrapper").hide();
+            }
+        }
+
+        function clearMessages() {
+            $("#messagewrapper").fadeOut(500, function () {
+                $("#messagewrapper").empty();
+            });
+        }
+
+        function handleAjaxMessages() {
+            $(document).ajaxSuccess(function (event, request) {
+                checkAndHandleMessageFromHeader(request);
+            }).ajaxError(function (event, request) {
+                if (request.status != 200)
+                    displayMessage(request.responseText, "error");
+            });
+        }
+
+        function checkAndHandleMessageFromHeader(request) {
+            var msg = request.getResponseHeader('X-Message');
+            if (msg) {
+                displayMessage(msg, request.getResponseHeader('X-Message-Type'));
+            }
+        }
+    </script>
+
+</head>
+
+<body>
+    <div class="page">
+        <header>
+            <div id="title">
+                <h1>Kendo POC</h1>
+            </div>
+
+            @(Html.Kendo().Menu()
+                    .Name("menu")
+                    .Items(menu =>
+                    {
+                        menu.Add().Text("Home").Action("Index", "Home");
+                        menu.Add().Text("Product").Action("Index", "Product");
+                    }))
+        </header>
+        <section id="main">
+            @RenderBody()
+        </section>
+        
+    </div>
+    <footer>
+            <div id="messagewrapper" class="div" >
+                @Html.RenderMessages()
+            </div>
+        </footer>
+    <script>
+        jQuery(document).ready(function () {
+             @RenderSection("onPageReadyScripts", false)
+         })
+    </script>
+</body>
+</html>

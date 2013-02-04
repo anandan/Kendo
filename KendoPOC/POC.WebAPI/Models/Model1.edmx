@@ -1,0 +1,269 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+      <Schema Namespace="KendoPOCModel.Store" Alias="Self" Provider="System.Data.SqlClient" ProviderManifestToken="2008" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityContainer Name="KendoPOCModelStoreContainer">
+          <EntitySet Name="Category" EntityType="KendoPOCModel.Store.Category" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="Product" EntityType="KendoPOCModel.Store.Product" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="UnitofMeasure" EntityType="KendoPOCModel.Store.UnitofMeasure" store:Type="Tables" Schema="dbo" />
+          <AssociationSet Name="FK_Product_Category" Association="KendoPOCModel.Store.FK_Product_Category">
+            <End Role="Category" EntitySet="Category" />
+            <End Role="Product" EntitySet="Product" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Product_UnitofMeasure" Association="KendoPOCModel.Store.FK_Product_UnitofMeasure">
+            <End Role="UnitofMeasure" EntitySet="UnitofMeasure" />
+            <End Role="Product" EntitySet="Product" />
+          </AssociationSet>
+        </EntityContainer>
+        <EntityType Name="Category">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="SessionId" Type="varchar" MaxLength="256" />
+          <Property Name="CreationTs" Type="datetime" Nullable="false" />
+          <Property Name="CreationUserId" Type="nvarchar" Nullable="false" MaxLength="50" />
+          <Property Name="LastChangeTs" Type="datetime" />
+          <Property Name="LastChangeUserId" Type="nvarchar" MaxLength="50" />
+          <Property Name="StatusType" Type="tinyint" Nullable="false" />
+          <Property Name="Code" Type="nvarchar" Nullable="false" MaxLength="100" />
+          <Property Name="Description" Type="nvarchar" MaxLength="300" />
+        </EntityType>
+        <EntityType Name="Product">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="SessionId" Type="varchar" MaxLength="256" />
+          <Property Name="CreationTs" Type="datetime" Nullable="false" />
+          <Property Name="CreationUserId" Type="nvarchar" Nullable="false" MaxLength="50" />
+          <Property Name="LastChangeTs" Type="datetime" />
+          <Property Name="LastChangeUserId" Type="nvarchar" MaxLength="50" />
+          <Property Name="StatusType" Type="tinyint" Nullable="false" />
+          <Property Name="ProductName" Type="nvarchar" Nullable="false" MaxLength="40" />
+          <Property Name="QuantityPerUnit" Type="nvarchar" MaxLength="20" />
+          <Property Name="UnitPrice" Type="decimal" Precision="5" Scale="2" />
+          <Property Name="UnitsInStock" Type="smallint" />
+          <Property Name="UnitsOnOrder" Type="smallint" />
+          <Property Name="ReorderLevel" Type="smallint" />
+          <Property Name="Discontinued" Type="bit" Nullable="false" />
+          <Property Name="UnitOfMeasure_Id" Type="int" Nullable="false" />
+          <Property Name="Category_Id" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="UnitofMeasure">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="SessionId" Type="varchar" MaxLength="256" />
+          <Property Name="CreationTs" Type="datetime" Nullable="false" />
+          <Property Name="CreationUserId" Type="nvarchar" Nullable="false" MaxLength="50" />
+          <Property Name="LastChangeTs" Type="datetime" />
+          <Property Name="LastChangeUserId" Type="nvarchar" MaxLength="50" />
+          <Property Name="StatusType" Type="tinyint" Nullable="false" />
+          <Property Name="Code" Type="nvarchar" Nullable="false" MaxLength="100" />
+          <Property Name="Description" Type="nvarchar" MaxLength="300" />
+        </EntityType>
+        <Association Name="FK_Product_Category">
+          <End Role="Category" Type="KendoPOCModel.Store.Category" Multiplicity="1" />
+          <End Role="Product" Type="KendoPOCModel.Store.Product" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Category">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Product">
+              <PropertyRef Name="Category_Id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Product_UnitofMeasure">
+          <End Role="UnitofMeasure" Type="KendoPOCModel.Store.UnitofMeasure" Multiplicity="1" />
+          <End Role="Product" Type="KendoPOCModel.Store.Product" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="UnitofMeasure">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Product">
+              <PropertyRef Name="UnitOfMeasure_Id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+      </Schema>
+    </edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="KendoPOCModel" Alias="Self" p1:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:p1="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityContainer Name="KendoPOCEntities" p1:LazyLoadingEnabled="true">
+          <EntitySet Name="Category" EntityType="KendoPOCModel.Category" />
+          <EntitySet Name="Product" EntityType="KendoPOCModel.Product" />
+          <EntitySet Name="UnitofMeasure" EntityType="KendoPOCModel.UnitofMeasure" />
+          <AssociationSet Name="FK_Product_Category" Association="KendoPOCModel.FK_Product_Category">
+            <End Role="Category" EntitySet="Category" />
+            <End Role="Product" EntitySet="Product" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Product_UnitofMeasure" Association="KendoPOCModel.FK_Product_UnitofMeasure">
+            <End Role="UnitofMeasure" EntitySet="UnitofMeasure" />
+            <End Role="Product" EntitySet="Product" />
+          </AssociationSet>
+        </EntityContainer>
+        <EntityType Name="Category">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" p1:StoreGeneratedPattern="Identity" />
+          <Property Name="SessionId" Type="String" MaxLength="256" Unicode="false" FixedLength="false" />
+          <Property Name="CreationTs" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="CreationUserId" Type="String" Nullable="false" MaxLength="50" Unicode="true" FixedLength="false" />
+          <Property Name="LastChangeTs" Type="DateTime" Precision="3" />
+          <Property Name="LastChangeUserId" Type="String" MaxLength="50" Unicode="true" FixedLength="false" />
+          <Property Name="StatusType" Type="Byte" Nullable="false" />
+          <Property Name="Code" Type="String" Nullable="false" MaxLength="100" Unicode="true" FixedLength="false" />
+          <Property Name="Description" Type="String" MaxLength="300" Unicode="true" FixedLength="false" />
+          <NavigationProperty Name="Product" Relationship="KendoPOCModel.FK_Product_Category" FromRole="Category" ToRole="Product" />
+        </EntityType>
+        <EntityType Name="Product">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" p1:StoreGeneratedPattern="Identity" />
+          <Property Name="SessionId" Type="String" MaxLength="256" Unicode="false" FixedLength="false" />
+          <Property Name="CreationTs" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="CreationUserId" Type="String" Nullable="false" MaxLength="50" Unicode="true" FixedLength="false" />
+          <Property Name="LastChangeTs" Type="DateTime" Precision="3" />
+          <Property Name="LastChangeUserId" Type="String" MaxLength="50" Unicode="true" FixedLength="false" />
+          <Property Name="StatusType" Type="Byte" Nullable="false" />
+          <Property Name="ProductName" Type="String" Nullable="false" MaxLength="40" Unicode="true" FixedLength="false" />
+          <Property Name="QuantityPerUnit" Type="String" MaxLength="20" Unicode="true" FixedLength="false" />
+          <Property Name="UnitPrice" Type="Decimal" Precision="5" Scale="2" />
+          <Property Name="UnitsInStock" Type="Int16" />
+          <Property Name="UnitsOnOrder" Type="Int16" />
+          <Property Name="ReorderLevel" Type="Int16" />
+          <Property Name="Discontinued" Type="Boolean" Nullable="false" />
+          <Property Name="UnitOfMeasure_Id" Type="Int32" Nullable="false" />
+          <Property Name="Category_Id" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Category" Relationship="KendoPOCModel.FK_Product_Category" FromRole="Product" ToRole="Category" />
+          <NavigationProperty Name="UnitofMeasure" Relationship="KendoPOCModel.FK_Product_UnitofMeasure" FromRole="Product" ToRole="UnitofMeasure" />
+        </EntityType>
+        <EntityType Name="UnitofMeasure">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" p1:StoreGeneratedPattern="Identity" />
+          <Property Name="SessionId" Type="String" MaxLength="256" Unicode="false" FixedLength="false" />
+          <Property Name="CreationTs" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="CreationUserId" Type="String" Nullable="false" MaxLength="50" Unicode="true" FixedLength="false" />
+          <Property Name="LastChangeTs" Type="DateTime" Precision="3" />
+          <Property Name="LastChangeUserId" Type="String" MaxLength="50" Unicode="true" FixedLength="false" />
+          <Property Name="StatusType" Type="Byte" Nullable="false" />
+          <Property Name="Code" Type="String" Nullable="false" MaxLength="100" Unicode="true" FixedLength="false" />
+          <Property Name="Description" Type="String" MaxLength="300" Unicode="true" FixedLength="false" />
+          <NavigationProperty Name="Product" Relationship="KendoPOCModel.FK_Product_UnitofMeasure" FromRole="UnitofMeasure" ToRole="Product" />
+        </EntityType>
+        <Association Name="FK_Product_Category">
+          <End Role="Category" Type="KendoPOCModel.Category" Multiplicity="1" />
+          <End Role="Product" Type="KendoPOCModel.Product" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Category">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Product">
+              <PropertyRef Name="Category_Id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Product_UnitofMeasure">
+          <End Role="UnitofMeasure" Type="KendoPOCModel.UnitofMeasure" Multiplicity="1" />
+          <End Role="Product" Type="KendoPOCModel.Product" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="UnitofMeasure">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Product">
+              <PropertyRef Name="UnitOfMeasure_Id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="KendoPOCModelStoreContainer" CdmEntityContainer="KendoPOCEntities">
+          <EntitySetMapping Name="Category">
+            <EntityTypeMapping TypeName="KendoPOCModel.Category">
+              <MappingFragment StoreEntitySet="Category">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="SessionId" ColumnName="SessionId" />
+                <ScalarProperty Name="CreationTs" ColumnName="CreationTs" />
+                <ScalarProperty Name="CreationUserId" ColumnName="CreationUserId" />
+                <ScalarProperty Name="LastChangeTs" ColumnName="LastChangeTs" />
+                <ScalarProperty Name="LastChangeUserId" ColumnName="LastChangeUserId" />
+                <ScalarProperty Name="StatusType" ColumnName="StatusType" />
+                <ScalarProperty Name="Code" ColumnName="Code" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Product">
+            <EntityTypeMapping TypeName="KendoPOCModel.Product">
+              <MappingFragment StoreEntitySet="Product">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="SessionId" ColumnName="SessionId" />
+                <ScalarProperty Name="CreationTs" ColumnName="CreationTs" />
+                <ScalarProperty Name="CreationUserId" ColumnName="CreationUserId" />
+                <ScalarProperty Name="LastChangeTs" ColumnName="LastChangeTs" />
+                <ScalarProperty Name="LastChangeUserId" ColumnName="LastChangeUserId" />
+                <ScalarProperty Name="StatusType" ColumnName="StatusType" />
+                <ScalarProperty Name="ProductName" ColumnName="ProductName" />
+                <ScalarProperty Name="QuantityPerUnit" ColumnName="QuantityPerUnit" />
+                <ScalarProperty Name="UnitPrice" ColumnName="UnitPrice" />
+                <ScalarProperty Name="UnitsInStock" ColumnName="UnitsInStock" />
+                <ScalarProperty Name="UnitsOnOrder" ColumnName="UnitsOnOrder" />
+                <ScalarProperty Name="ReorderLevel" ColumnName="ReorderLevel" />
+                <ScalarProperty Name="Discontinued" ColumnName="Discontinued" />
+                <ScalarProperty Name="UnitOfMeasure_Id" ColumnName="UnitOfMeasure_Id" />
+                <ScalarProperty Name="Category_Id" ColumnName="Category_Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="UnitofMeasure">
+            <EntityTypeMapping TypeName="KendoPOCModel.UnitofMeasure">
+              <MappingFragment StoreEntitySet="UnitofMeasure">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="SessionId" ColumnName="SessionId" />
+                <ScalarProperty Name="CreationTs" ColumnName="CreationTs" />
+                <ScalarProperty Name="CreationUserId" ColumnName="CreationUserId" />
+                <ScalarProperty Name="LastChangeTs" ColumnName="LastChangeTs" />
+                <ScalarProperty Name="LastChangeUserId" ColumnName="LastChangeUserId" />
+                <ScalarProperty Name="StatusType" ColumnName="StatusType" />
+                <ScalarProperty Name="Code" ColumnName="Code" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="True" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="True" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>

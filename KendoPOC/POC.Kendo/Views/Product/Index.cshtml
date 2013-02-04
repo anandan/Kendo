@@ -1,0 +1,637 @@
+﻿@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@using Poc.Kendo;
+@model ProductViewModel
+@using (Html.BeginForm())
+{
+    @Html.Hidden("selectedDataItem")
+    @Html.Hidden("selectedId", "0")
+
+    <!-- CRUD Buttons -->
+    <fieldset>
+        <legend hidden="hidden"></legend>
+        <div id="crudInvokerButtons">
+            <button id="btnAdd" type="button" name="button" class="k-button" value="Add" onclick="clearFormElements(this.form)">
+                <img src="~/Content/images/Add.png" /></button>
+            <button id="btnEdit" type="button" name="button" class="k-button" value="Edit">
+                <img src="~/Content/images/Edit.png" /></button>
+            <button id="btnDelete" type="button" name="button" class="k-button" value="Delete">
+                <img src="~/Content/images/Delete.png" /></button>
+            <button id="btnRefresh" name="button" class="k-button" value="Refresh">
+                <img src="~/Content/images/Refresh.png" /></button>
+        </div>
+        <div id="crudActionButtons" hidden="hidden">
+            <button id="btnSave" type="button" name="button" class="k-button" value="Save">
+                <img src="~/Content/images/Save.png" /></button>
+            <button id="btnCancel" type="button" name="button" class="k-button" value="Cancel">
+                <img src="~/Content/images/Cancel.png" /></button>
+            <button id="btnClear" type="button" name="button" class="k-button" value="Clear">
+                <img src="~/Content/images/Clear.png" /></button>
+        </div>
+
+        <p>
+            <span id="errorMessage" hidden="hidden" class="labelError">@ViewBag.ErrorMessage</span>
+            <span id="message" hidden="hidden" class="labelSuccess">@ViewBag.Message</span>
+            <span id="messageDelete" hidden="hidden" class="labelSuccess"></span>
+            <span id="errorMessageDelete" hidden="hidden" class="labelError"></span>
+            @Html.ValidationSummary("Save failed, please enter with valid details and try again.")
+        </p>
+        <div id="mainGrid">
+            @(Html.Kendo().Grid(Model.ProductList)
+        .Name("Grid")
+        .Columns(columns =>
+        {
+            columns.Bound(p => p.CreationTs).Visible(false);
+            columns.Bound(p => p.CreationUserId).Visible(false);
+            columns.Bound(p => p.LastChangeTs).Visible(false);
+            columns.Bound(p => p.LastChangeUserId).Visible(false);
+            columns.Bound(p => p.StatusType).Visible(false);
+            columns.Bound(p => p.Id).Width(25).Groupable(false).Encoded(false).Visible(true);
+            columns.Bound(p => p.ProductName).Width(120).Encoded(false);
+            columns.Bound(p => p.QuantityPerUnit).Width(90).Encoded(false);
+            columns.Bound(p => p.UnitPrice).Width(80).Encoded(false).Format("{0:C}");
+            columns.Bound(p => p.UnitsInStock).Width(60).Encoded(false);
+            columns.Bound(p => p.UnitsOnOrder).Width(60).Encoded(false);
+            columns.Bound(p => p.ReorderLevel).Width(60).Encoded(false);
+            columns.Bound(p => p.Discontinued).Width(60).Encoded(false);
+            columns.Bound(p => p.Category.Description).Width(60).Encoded(false);
+            columns.Bound(p => p.UnitofMeasure.Description).Width(60).Encoded(false);
+            columns.Bound(p => p.Category_Id).Visible(false);
+            columns.Bound(p => p.UnitOfMeasure_Id).Visible(false);
+        })
+        .Selectable(s => s.Mode(Kendo.Mvc.UI.GridSelectionMode.Single).Enabled(true))
+        .Groupable()
+        .Pageable()
+        .Sortable()
+        .Filterable()
+        .Scrollable(scroll => scroll.Enabled(false))
+        .DataSource(dataSource => dataSource
+            .Ajax()
+            .ServerOperation(false)
+            .Model(model => model.Id(p => p.Id))
+            .Batch(true)
+            .Read(read => read.Action("Products_Read", "Product") )
+            .Events(events => events.Error("error"))
+            .Sort(sort =>
+            {
+                sort.Add(p => p.ProductName);
+            }
+            )
+            .PageSize(10) 
+    ))
+        </div>
+
+        <div id="formDetails" hidden="hidden">
+            <fieldset>
+                @Html.HiddenFor(product => product.SelectedProduct.Id)
+                @Html.HiddenFor(product => product.SelectedProduct.CreationTs)
+                @Html.HiddenFor(product => product.SelectedProduct.CreationUserId)
+                @Html.HiddenFor(product => product.SelectedProduct.LastChangeTs)
+                @Html.HiddenFor(product => product.SelectedProduct.LastChangeUserId)
+                @Html.HiddenFor(product => product.SelectedProduct.StatusType)
+                <legend>Product Details</legend>
+
+                <table>
+
+                    <tr>
+                        <td>
+                            @Html.Label("", "Product Name", new { @class = "label" })
+
+                        </td>
+                        <td>&nbsp;
+                        </td>
+                        <td>
+                            <div>
+                                @Html.TextBoxFor(product => product.SelectedProduct.ProductName, new { @class = " k-input " })
+                                @Html.ValidationMessageFor(model => model.SelectedProduct.ProductName, "*")
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="editor-label">
+                                @Html.Label("", "Quantity Per Unit", new { @class = "label" })
+                            </div>
+                        </td>
+                        <td>&nbsp;
+                        </td>
+                        <td>
+                            <div class="editor-label">
+                                @Html.TextBoxFor(product => product.SelectedProduct.QuantityPerUnit, new { @class = "k-input" })
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="editor-label">
+                                @Html.Label("", "Unit Price", new { @class = "label" })
+                            </div>
+                        </td>
+                        <td>&nbsp;
+                        </td>
+                        <td>
+                            <div class="editor-label">
+                                @Html.Kendo().CurrencyTextBoxFor(productVM => productVM.SelectedProduct.UnitPrice)
+                                @Html.ValidationMessageFor(model => model.SelectedProduct.UnitPrice, "*")
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="editor-label">
+                                @Html.Label("", "Units In Stock", new { @class = "label" })
+                            </div>
+                        </td>
+                        <td>&nbsp;
+                        </td>
+                        <td>
+                            <div class="editor-label">
+                                @Html.TextBoxFor(product => product.SelectedProduct.UnitsInStock, new { @class = "k-input" })
+                                @Html.ValidationMessageFor(model => model.SelectedProduct.UnitsInStock, "*")
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="editor-label">
+                                @Html.Label("", "Units On Order", new { @class = "label" })
+                            </div>
+                        </td>
+                        <td>&nbsp;
+                        </td>
+                        <td>
+                            <div class="editor-label">
+                                @Html.TextBoxFor(product => product.SelectedProduct.UnitsOnOrder, new { @class = "k-input" })
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="editor-label">
+                                @Html.Label("", "Reorder Level", new { @class = "label" })
+                            </div>
+                        </td>
+                        <td>&nbsp;
+                        </td>
+                        <td>
+                            <div class="editor-label">
+                                @Html.TextBoxFor(product => product.SelectedProduct.ReorderLevel, new { @class = "k-input" })
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="editor-label">
+                                @Html.Label("", "Discontinued", new { @class = "label" })
+                            </div>
+                        </td>
+                        <td>&nbsp;
+                        </td>
+                        <td>
+                            <div class="editor-label">
+                                @Html.CheckBoxFor(product => product.SelectedProduct.Discontinued)
+                            </div>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>
+                            <div class="editor-label">
+                                @Html.Label("", "Unit Description", new { @class = "label" })
+                            </div>
+                        </td>
+                        <td>&nbsp;
+                        </td>
+                        <td>
+                            <div class="editor-label">
+                                @(Html.Kendo().ComboBoxFor(product => product.SelectedProduct.UnitofMeasure.Description)
+                                            .DataTextField("Description")
+                                            .DataValueField("Id")
+                                            .BindTo(Model.UnitOfMeasureList).AutoBind(true))
+                            </div>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>
+                            <div class="editor-label">
+                                @Html.Label("", "Category Description", new { @class = "label" })
+                            </div>
+                        </td>
+                        <td>&nbsp;
+                        </td>
+                        <td>
+                            <div class="editor-label">
+                                @(Html.Kendo().ComboBoxFor(product =>product.SelectedProduct.Category.Description)
+                                    .DataTextField("Description")
+                                    .DataValueField("Id")
+                                    .BindTo(Model.Categorylist).AutoBind(true))
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </fieldset>
+        </div>
+    </fieldset>
+}
+
+    @section onPageReadyScripts
+    {
+    var selectedItemGrid = $('#Grid').data('kendoGrid');
+    selectedItemGrid.bind("change", onSelectRow);
+    }
+
+<script>
+    $(document).ready(function () {
+        var grid = $("#Grid").data("kendoGrid");
+        var guidRowMatch1 = ">tr:first";
+        var row1 = grid.tbody.find(guidRowMatch1);
+        grid.select(row1);
+
+        var container = $('form').find('[data-valmsg-summary="true"]');
+        var list = container.find('ul');
+        $('#crudActionButtons').hide();
+
+        if (list && list.length) {
+            if (list.text().length > 1) {
+                visibilityForm(false);
+            }
+            else if ($('#errorMessage').val().length) {
+                visibilityForm(false);
+            }
+            else {
+                visibilityForm(true);
+            }
+        }
+    });
+
+    $('#btnAdd').on('click', function () {
+        $('#crudInvokerButtons').hide();
+        $('#crudActionButtons').show();
+        $('#mainGrid').hide();
+        $('#formDetails').show();
+
+        $('#selectedDataItem').val(null);
+        $('#selectedId').val(0);
+    });
+
+    $('#btnEdit').on('click', function () {
+
+        copySelectedRow();
+
+        $('#crudInvokerButtons').hide();
+        $('#crudActionButtons').show();
+        $('#mainGrid').hide();
+        $('#formDetails').show();
+
+        $('.labelSuccess').empty();
+
+        if (parseInt($('#selectedId').val(), 10) == "0") {
+            assignDetails();
+        }
+    });
+
+    $('#btnSave').on('click', function () {
+
+        $('.labelSuccess').empty();
+        var validator = $("#formDetails").kendoValidator().data("kendoValidator");
+        var isFormDataValid = validator.validate();
+
+        if (isFormDataValid) {
+            var productJson = getCurrentProductJson();
+
+            $.ajax({
+                url: '/Product/SaveProducts',
+                type: 'POST',
+                dataType: 'json',
+                data: productJson,
+                contentType: 'application/json; charset=utf-8',
+                complete: function (response) {
+                    processProductSaveRespose(response);
+                }
+            });
+        }
+        else {
+            $('.labelSuccess').text = "There are validation errors!";
+        }
+    });
+
+    $('#btnDelete').on('click', function () {
+        $('.labelSuccess').empty();
+
+        if (confirm("Are you sure, do you want to delete this product?")) {
+
+            var productJson = getCurrentProductJson();
+
+            $.ajax({
+                url: '/Product/DeleteProduct/',
+                type: 'POST',
+                dataType: 'json',
+                data: productJson,
+                contentType: 'application/json; charset=utf-8',
+                complete: function (response) {
+                    processProductDeleteRespose(response);
+                }
+            });
+        }
+    });
+
+    
+    $('#btnRefresh').on('click', function () {
+        var grid = $("#Grid").data("kendoGrid");
+        grid.dataSource.read();
+    });
+
+
+    $('#btnCancel').on('click', function () {
+        $('#formDetails').hide();
+        $('#crudInvokerButtons').show();
+        $('#crudActionButtons').hide();
+        $('#mainGrid').show();
+
+        $('.validation-summary-errors').empty();
+        $('.labelSuccess').empty();
+        $('.labelError').empty();
+    });
+
+    $('#btnClear').on('click', function () {
+        clearFormElements(this.form);
+
+        $('.validation-summary-errors').empty();
+        $('.labelSuccess').empty();
+        $('.labelError').empty();
+    });
+
+    //////////////////////////////////
+    //support functions
+    ////////////////////////
+    function visibilityForm(isVisible) {
+        if (isVisible == 1) {
+            $('#formDetails').hide();
+            $('#crudInvokerButtons').show();
+            $('#crudActionButtons').hide();
+            $('#mainGrid').show();
+        }
+        else {
+            $('#formDetails').show();
+            $('#crudInvokerButtons').hide();
+            $('#crudActionButtons').show();
+            $('#mainGrid').hide();
+        }
+    }
+
+    function onSelectRow(e) {
+
+        var grid = $("#Grid").data("kendoGrid");
+        var currentSelectedItem = grid.dataItem(grid.select());
+        $('#selectedId').val(currentSelectedItem.Id);
+    }
+
+    function copySelectedRow() {
+
+        var grid = $("#Grid").data("kendoGrid");
+        var currentSelectedItem = grid.dataItem(grid.select());
+
+        $('#SelectedProduct_Id').val(currentSelectedItem.Id);
+
+        $('#SelectedProduct_CreationTs').val(currentSelectedItem.CreationTs.toISOString());
+        $('#SelectedProduct_CreationUserId').val(currentSelectedItem.CreationUserId);
+        if (currentSelectedItem.LastChangeTs != null) {
+            $('#SelectedProduct_LastChangeTs').val(currentSelectedItem.LastChangeTs.toISOString());
+        }
+        $('#SelectedProduct_LastChangeUserId').val(currentSelectedItem.LastChangeUserId);
+        $('#SelectedProduct_StatusType').val(currentSelectedItem.StatusType);
+
+        $('#SelectedProduct_ProductName').val(currentSelectedItem.ProductName);
+        $('#SelectedProduct_QuantityPerUnit').val(currentSelectedItem.QuantityPerUnit);
+        $('#SelectedProduct_UnitPrice').val(currentSelectedItem.UnitPrice);
+        $('#SelectedProduct_UnitsInStock').val(currentSelectedItem.UnitsInStock);
+        $('#SelectedProduct_UnitsOnOrder').val(currentSelectedItem.UnitsOnOrder);
+        $('#SelectedProduct_ReorderLevel').val(currentSelectedItem.ReorderLevel);
+        $('#SelectedProduct_Discontinued').val(currentSelectedItem.Discontinued);
+        jQuery(function () { jQuery("#SelectedProduct_UnitPrice").kendoNumericTextBox({ "format": "c" }); });
+
+        $('#selectedDataItem').val(currentSelectedItem);
+        $('#selctedUnit_Description').val(currentSelectedItem.UnitofMeasure.Description);
+        $('#SelectedProduct_Category_Id').val(currentSelectedItem.Category_Id);
+
+        var unitCombobox = $("#SelectedProduct_UnitofMeasure_Description").data("kendoComboBox");
+        var categoryCombobox = $("#SelectedProduct_Category_Description").data("kendoComboBox");
+        unitCombobox.value(currentSelectedItem.UnitofMeasure.Description);
+        categoryCombobox.value(currentSelectedItem.Category.Description)
+    }
+
+
+
+    function assignDetails() {
+        var grid = $('#Grid').data('kendoGrid');
+        var rows = grid.select();
+        rows.each(
+            function () {
+                var record = this.data();
+                $('#selectedDataItem').val(record);
+                $('#selectedId').val(record.Id);
+                $('#SelectedProduct_Id').val(record.Id);
+                $('#SelectedProduct_CreationTs').val(record.CreationTs.toISOString());
+                $('#SelectedProduct_CreationUserId').val(record.CreationUserId);
+                $('#SelectedProduct_LastChangeTs').val('2012-08-17 18:59:55.260');
+                $('#SelectedProduct_LastChangeUserId').val(record.LastChangeUserId);
+                $('#SelectedProduct_StatusType').val(record.StatusType);
+                $('#SelectedProduct_ProductName').val(record.ProductName);
+                $('#SelectedProduct_QuantityPerUnit').val(record.QuantityPerUnit);
+                $('#SelectedProduct_UnitPrice').val(record.UnitPrice);
+                $('#SelectedProduct_UnitsInStock').val(record.UnitsInStock);
+                $('#SelectedProduct_UnitsOnOrder').val(record.UnitsOnOrder);
+                $('#SelectedProduct_ReorderLevel').val(record.ReorderLevel);
+                $('#SelectedProduct_Discontinued').val(record.Discontinued);
+                $('#SelectedProduct_UnitOfMeasure_Id').val(record.UnitOfMeasure_Id);
+                $('#SelectedProduct_Category_Id').val(record.Category_Id);
+            }
+        )
+    }
+
+    function processProductDeleteRespose(response) {
+
+        handleHttpResponseMessage(response, "Product");
+
+        if (response.status == 200) {
+            visibilityForm(true);
+            var grid = $("#Grid").data("kendoGrid");
+            grid.select().each(function () {
+                grid.removeRow($(this));
+            });
+        }
+    }
+
+    function processProductSaveRespose(response) {
+
+        handleHttpResponseMessage(response, "Product");
+
+        if (response.status == 200) {
+            visibilityForm(true);
+            var grid = $("#Grid").data("kendoGrid");
+            grid.dataSource.read();
+        }
+    }
+
+
+    function Product() {
+        this.id = null;
+        this.sessionId = null;
+        this.creationTs = null;
+        this.creationUserId = null;
+        this.lastChangeTs = null;
+        this.lastChangeUserId = null;
+        this.statusType = null;
+        this.productName = null;
+        this.quantityPerUnit = null;
+        this.unitPrice = null;
+        this.unitsInStock = null;
+        this.unitsOnOrder = null;
+        this.reorderLevel = null;
+        this.discontinued = null;
+        this.unitOfMeasure_Id = null;
+        this.category_Id = null;
+    }
+
+    function getCurrentProductJson(includeAllFields) {
+        if (!includeAllFields) {
+            includeAllFields = true;
+        }
+        return JSON.stringify(getCurrentProduct(includeAllFields));
+    }
+
+    function getCurrentProduct(includeAllFields) {
+
+        if (!includeAllFields) {
+            includeAllFields = true;
+        }
+
+        var product = new Product();
+
+        product.id = $('#selectedId').val();
+        product.sessionId = $('#selectedId').val();
+        product.creationTs = $('#SelectedProduct_CreationTs').val();
+        product.creationUserId = $('#SelectedProduct_CreationUserId').val();
+        product.lastChangeTs = $('#SelectedProduct_LastChangeTs').val();
+        product.lastChangeUserId = $('#SelectedProduct_LastChangeUserId').val();
+        product.statusType = $('#SelectedProduct_StatusType').val();
+        if (includeAllFields) {
+            product.productName = $('#SelectedProduct_ProductName').val();
+            product.quantityPerUnit = $('#SelectedProduct_QuantityPerUnit').val();
+            product.unitPrice = $('#SelectedProduct_UnitPrice').val();
+            product.unitsInStock = $('#SelectedProduct_UnitsInStock').val();
+            product.unitsOnOrder = $('#SelectedProduct_UnitsOnOrder').val();
+            product.reorderLevel = $('#SelectedProduct_ReorderLevel').val();
+            product.discontinued = $('#SelectedProduct_Discontinued').val();
+
+            var unitCombobox = $("#SelectedProduct_UnitofMeasure_Description").data("kendoComboBox");
+            var categoryCombobox = $("#SelectedProduct_Category_Description").data("kendoComboBox");
+
+            product.unitOfMeasure_Id = unitCombobox.value();
+            product.category_Id = categoryCombobox.value();
+        }
+
+        return product;
+    }
+
+    $(function () {
+        $('.form-reset').live('click', function () {
+            $(this).formReset();
+            return false;
+        });
+
+        $('input[type=reset]').live('click', function () {
+            $(this).resetValidation();
+        });
+    })
+
+    if (!Date.prototype.toISOString) {
+
+        (function () {
+
+            function pad(number) {
+                var r = String(number);
+                if (r.length === 1) {
+                    r = '0' + r;
+                }
+                return r;
+            }
+
+            Date.prototype.toISOString = function () {
+                return this.getUTCFullYear()
+                    + '-' + pad(this.getUTCMonth() + 1)
+                    + '-' + pad(this.getUTCDate())
+                    + 'T' + pad(this.getUTCHours())
+                    + ':' + pad(this.getUTCMinutes())
+                    + ':' + pad(this.getUTCSeconds())
+                    + '.' + String((this.getUTCMilliseconds() / 1000).toFixed(3)).slice(2, 5)
+                    + 'Z';
+            };
+
+        }());
+    }
+
+
+</script>
+
+
+@*/////////
+//Generic Script
+/////////*@
+<script>
+
+    function clearFormElements(ele) {
+
+        $(ele).find(':input').each(function () {
+            switch (this.type) {
+                case 'password':
+                case 'select-multiple':
+                case 'select-one':
+                case 'text':
+                case 'textarea':
+                    //case 'hidden':
+                    $(this).val('');
+                    break;
+                case 'checkbox':
+                case 'radio':
+                    this.checked = false;
+            }
+        });
+
+        $('.labelSuccess').empty();
+    }
+
+    function handleHttpResponseMessage(response, resourceName) {
+
+        var message = "";
+        var messageType = "success"; //Warning //Error
+        switch (response.status) {
+            case 404:
+                message = resourceName + " Not Found!";
+                messageType = "Error";
+                break;
+            case 200:
+                message = resourceName + " CRUD Successfull!";
+                break;
+        }
+        displayMessage(message, messageType);
+    }
+
+    function error(e) {
+        if (e.errors) {
+            var message = "Errors:\n";
+            $.each(e.errors, function (key, value) {
+                if ('errors' in value) {
+                    $.each(value.errors, function () {
+                        message += this + "\n";
+                    });
+                }
+            });
+
+            alert(message);
+        }
+    }
+</script>
